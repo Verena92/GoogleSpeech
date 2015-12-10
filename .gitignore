@@ -51,6 +51,5 @@ www-test/
 
  
 
-27 #old GWT (1.5) created this dir 
-
-28 .gwt-tmp/
+#old GWT (1.5) created this dir 
+.gwt-tmp/
