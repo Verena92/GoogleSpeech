@@ -98,26 +98,12 @@
   <div class="sidebyside" style="text-align:right">
   </div>
   <p>
- <div id="div_language">
-    <select id="select_language"></select>
-  </div>
 </div>
 <script>
-var langs =
-[['English',         ['en-US']]];
-for (var i = 0; i < langs.length; i++) {
-  select_language.options[i] = new Option(langs[i][0], i);
-}
-		select_language.selectedIndex = 1;
-			updateCountry();
-			function updateCountry() {
-		  var list = langs[select_language.selectedIndex];
-}
 var final_transcript = '';
 var recognizing = false;
 var ignore_onend;
 var start_timestamp;
-
 
 if (!('webkitSpeechRecognition' in window)) {
   upgrade();
@@ -127,9 +113,8 @@ if (!('webkitSpeechRecognition' in window)) {
   recognition.continuous = true;
   recognition.interimResults = true;
   recognition.onstart = function() {
+    recognition.lang = "en-US";
     recognizing = true;
-    showInfo('info_speak_now');
-    start_img.src = 'mic-animate.gif';
   };
   recognition.onend = function() {
     recognizing = false;
@@ -154,10 +139,7 @@ if (!('webkitSpeechRecognition' in window)) {
     }
   };
 }
-function upgrade() {
-  start_button.style.visibility = 'hidden';
-  showInfo('info_upgrade');
-}
+/* Durch linebreak und capatilize wird Text in Box eingeblendet */
 var two_line = /\n\n/g;
 var one_line = /\n/g;
 function linebreak(s) {
@@ -174,14 +156,9 @@ function startButton(event) {
     return;
   }
   final_transcript = '';
-  /*recognition.lang = select_dialect.value;*/
   recognition.start();
   ignore_onend = false;
   final_span.innerHTML = '';
   interim_span.innerHTML = '';
-  start_img.src = 'mic-slash.gif';
-  showInfo('info_allow');
-  showButtons('none');
-  start_timestamp = event.timeStamp;
 }
 </script>
