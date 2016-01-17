@@ -3,7 +3,7 @@
 <title>Google Web Speech API Beispiel</title>
 
 <h1 class="center" id="headline">Google Web Speech API Beispiel</h1>
-
+<script src="https://www.google.com/speech-api/v2/recognize?output=json&lang=en-us&key=AIzaSyBkdwCDCX5XXDkOvnD4fVDXGfbiJWX1Qi4"></script>
 <div class="center">
 	Um eine Aufnahme zu tätigen, bitte den Button "Speak" betätigen - die Aufnahme endet automatisch oder durch erneutes Klicken des "Speak" Buttons.
 </div>
@@ -17,21 +17,26 @@
 </div>
 
 <script>
+	
 	var final_transcript = '';
 	var recognizing = false;
 	var ignore_onend;
 	var start_timestamp;
+	
+	
 
 	if (!('webkitSpeechRecognition' in window)) {
-  			upgrade();
+			upgrade ();
 		} else {
-  			start_button.style.display = 'inline-block';
  			var recognition = new webkitSpeechRecognition();
+  			/*var key = "AIzaSyBkdwCDCX5XXDkOvnD4fVDXGfbiJWX1Qi4";
+  			var baseurl = "https://www.google.com/speech-api/v2/";*/
   			recognition.continuous = true;
   			recognition.interimResults = true;
   			recognition.onstart = function() {
     			recognition.lang = "en-US";
     			recognizing = true;
+    			
   			};
   			recognition.onend = function() {
     		recognizing = false;
@@ -51,9 +56,6 @@
     			final_transcript = capitalize(final_transcript);
     			final_span.innerHTML = linebreak(final_transcript);
     			interim_span.innerHTML = linebreak(interim_transcript);
-    			if (final_transcript || interim_transcript) {
-      				showButtons('inline-block');
-    				}
   			};
 		}
 		
@@ -79,6 +81,20 @@ function startButton(event) {
 	final_span.innerHTML = '';
 	interim_span.innerHTML = '';
 	}
+	
+/*curl -X POST \
+	header 'Content-Type: audio/l16; rate=16000;' \
+	'https://www.google.com/speech-api/v2/recognize?output=json&lang=en-us&key=AIzaSyBkdwCDCX5XXDkOvnD4fVDXGfbiJWX1Qi4';
+	*/	
+/*funktion send() {
+			var text = $("#results").val();
+			$.ajax({
+					type: "POST",
+					url: baseUrl + "query/",
+					dataType: "json",
+					data: JSON.stringify({ q: text, lang: "en" }),
+		});
+		}*/
 </script>
 
 <style>
