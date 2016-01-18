@@ -3,7 +3,8 @@
 <title>Google Web Speech API Beispiel</title>
 
 <h1 class="center" id="headline">Google Web Speech API Beispiel</h1>
-<script src="https://www.google.com/speech-api/v2/recognize?output=json&lang=en-us&key=AIzaSyBkdwCDCX5XXDkOvnD4fVDXGfbiJWX1Qi4"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript" src="./src/google-tts.js"></script>
 <div class="center">
 	Um eine Aufnahme zu tätigen, bitte den Button "Speak" betätigen - die Aufnahme endet automatisch oder durch erneutes Klicken des "Speak" Buttons.
 </div>
@@ -17,21 +18,34 @@
 </div>
 
 <script>
-	
+	var accessToken = "AIzaSyBkdwCDCX5XXDkOvnD4fVDXGfbiJWX1Qi4";
+  	var baseurl = "https://www.google.com/speech-api/v2/recognize?output=json&lang=en-us&key=AIzaSyBkdwCDCX5XXDkOvnD4fVDXGfbiJWX1Qi4";
 	var final_transcript = '';
 	var recognizing = false;
 	var ignore_onend;
 	var start_timestamp;
 	
-	
+	$(document).ready(function() {
+		$("#results").keypress(function(event) {
+			if (event.which == 13) {
+			event.preventDefault();
+			send();
+				}
+		});
+		$("#start_button").click(function(event) {
+			startButton();
+			});
+	});
 
 	if (!('webkitSpeechRecognition' in window)) {
 			upgrade ();
 		} else {
+			/*webkitSpeechRecognition objekt stellt das speech interface bereit. wir setzen noch attribute und definieren event handler*/
  			var recognition = new webkitSpeechRecognition();
-  			/*var key = "AIzaSyBkdwCDCX5XXDkOvnD4fVDXGfbiJWX1Qi4";
-  			var baseurl = "https://www.google.com/speech-api/v2/";*/
+  			
+  			/* Continous: true = user kann pause einlegen, bei false wird sofort geschickt sobald pause*/
   			recognition.continuous = true;
+  	        /* interimResults: true = angezeigte graue wörter sind noch nicht festgestetzt, erst wenn sie schwarz sind, sind sie fest. false: wörter kommen erst wenn sich das system sicher ist */
   			recognition.interimResults = true;
   			recognition.onstart = function() {
     			recognition.lang = "en-US";
@@ -44,6 +58,7 @@
       			return;
     			}
   			};
+  			/*interim_transcript und wird jedes mal neu befüllt, da nur vorübergehend. der schwwarze text (final transcript) ändert sich nicht, deswegen kann er nur neue sachen aufnehmen*/
   			recognition.onresult = function(event) {
    				var interim_transcript = '';
     			for (var i = event.resultIndex; i < event.results.length; ++i) {
@@ -53,12 +68,30 @@
         				interim_transcript += event.results[i][0].transcript;
       					}
     				}
+    			/*linebreak für neuen paragraphen, wird dann in html übersetzt*/
     			final_transcript = capitalize(final_transcript);
+    			/*final span für schwarzen text*/
     			final_span.innerHTML = linebreak(final_transcript);
+    			/*interim span für grauen text*/
     			interim_span.innerHTML = linebreak(interim_transcript);
   			};
 		}
 		
+/*Wird nach Drücken auf den Start-Button aufgerufen*/
+function startButton(event) {
+	if (recognizing) {
+    	recognition.stop();
+    	return;
+  	}
+	final_transcript = '';
+	/*aktiviert den speech recognizer und ruft onstart event handler auf*/
+	recognition.start();
+	ignore_onend = false;
+	final_span.innerHTML = '';
+	interim_span.innerHTML = '';
+	}
+	
+	
 /* Durch linebreak und capatilize wird Text in Box eingeblendet */
 var two_line = /\n\n/g;
 var one_line = /\n/g;
@@ -70,32 +103,25 @@ function capitalize(s) {
 	return s.replace(first_char, function(m) { return m.toUpperCase(); });
 	}
 
-function startButton(event) {
-	if (recognizing) {
-    	recognition.stop();
-    	return;
-  	}
-	final_transcript = '';
-	recognition.start();
-	ignore_onend = false;
-	final_span.innerHTML = '';
-	interim_span.innerHTML = '';
+function send() {
+			var text = $("#results").val();
+			$.ajax({
+					type: "POST",
+					url: baseUrl + "query/",
+					contentType: "audio/l16; rate=16000",
+					dataType: "json",
+					data: JSON.stringify({ q: text, lang: "en" }),
+		});
 	}
 	
 /*curl -X POST \
 	header 'Content-Type: audio/l16; rate=16000;' \
 	'https://www.google.com/speech-api/v2/recognize?output=json&lang=en-us&key=AIzaSyBkdwCDCX5XXDkOvnD4fVDXGfbiJWX1Qi4';
 	*/	
-/*funktion send() {
-			var text = $("#results").val();
-			$.ajax({
-					type: "POST",
-					url: baseUrl + "query/",
-					dataType: "json",
-					data: JSON.stringify({ q: text, lang: "en" }),
-		});
-		}*/
+
 </script>
+
+<!--  CSS Styles -->
 
 <style>
   * {
