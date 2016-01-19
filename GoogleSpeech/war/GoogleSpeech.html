@@ -24,9 +24,8 @@
 	if (!('webkitSpeechRecognition' in window)) {
 			upgrade ();
 		} else {
-			/*webkitSpeechRecognition objekt stellt das speech interface bereit. wir setzen noch attribute und definieren event handler*/
+			/*Erlaubt der Seite Zugriff auf das Mikrofon - webkitSpeechRecognition Objekt stellt das Speech Interface bereit und definiert Eventhandler*/
  			var recognition = new webkitSpeechRecognition();
-  			
   			/* Continous: true = user kann pause einlegen, bei false wird sofort geschickt sobald pause*/
   			recognition.continuous = true;
   	        /* interimResults: true = angezeigte graue wörter sind noch nicht festgestetzt, erst wenn sie schwarz sind, sind sie fest. false: wörter kommen erst wenn sich das system sicher ist */
